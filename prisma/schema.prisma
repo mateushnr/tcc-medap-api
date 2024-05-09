@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  street       String?
+  number       Int?
+  neighborhood String?
+  city         String?
+  state        String?
+  postCode     String?
+  compliment   String?
+  latitude     Float?
+  longitude    Float?
+
+  establishment Establishment?
+  Professional  Professional?
+
+  @@map("address")
+}
+
+model Establishment {
+  id             String  @id @default(uuid())
+  name           String  @unique
+  abbreviation   String  @unique
+  cnpj           String  @unique
+  type           String
+  especiality    String
+  mainPhone      String
+  secondaryPhone String?
+  email          String  @unique
+  status         String  @default("Ativo")
+
+  establishmentAddress String? @unique
+
+  locale Address? @relation(fields: [establishmentAddress], references: [id])
+
+  Professional Professional[]
+
+  @@map("establishment")
+}
+
+model Professional {
+  id          String @id @default(uuid())
+  name        String
+  email       String @unique
+  cpf         String @unique
+  phone       String
+  role        String
+  birthDate   String
+  status      String @default("Ativo")
+  password    String
+  accessLevel Int
+  bound       String @default("Estabelecimento")
+
+  professionalAddress       String? @unique
+  professionalEstablishment String
+
+  reside Address? @relation(fields: [professionalAddress], references: [id])
+
+  work Establishment @relation(fields: [professionalEstablishment], references: [id])
+
+  @@map("professional")
+}

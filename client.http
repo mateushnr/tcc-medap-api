@@ -1,0 +1,67 @@
+@baseUrl = http://localhost:3000
+@authToken = {{authenticate.response.body.access_token}}
+
+# @name create_professional
+POST {{baseUrl}}/api/professionals
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "cpf": "123.456.789-10",
+    "phone": "18 99888-8888",
+    "role": "Administrador",
+    "birthDate": "2000-01-01",
+    "status": "Ativo",
+    "password": "123456",
+    "accessLevel": 1,
+    "bound": "Estabelecimento",
+    "professionalEstablishment": "14510bdf-e7e8-4114-8b64-252b20605e93",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos2",
+    "number": 752,
+    "neighborhood": "Jardim Itapura2",
+    "city": "São Paulo",
+    "state": "São Paulo"
+}
+
+###
+
+# @name authenticate
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+
+{
+    "organization": "Medap",
+    "email": "johndoe2@example.com",
+    "password": "123456"
+}
+
+###
+
+# @name create_establishment
+POST {{baseUrl}}/api/establishments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "Sistema de acompanhamento de medicação e prescrição",
+    "abbreviation": "Medap",
+    "cnpj": "42.864.203/0001-76",
+    "type": "Médico",
+    "especiality": "Cardiologia",
+    "mainPhone": "18 99999-9999",
+    "email": "medap@contato.com",
+    "status": "Ativo",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 751,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo",
+    "latitude": 22.1447,
+    "longitude": -46.9890
+}
+
+###
