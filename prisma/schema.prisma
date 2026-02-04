@@ -1,0 +1,470 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Address Section ---
+
+model Address {
+  id           String  @id @default(uuid())
+  street       String?
+  number       Int?
+  neighborhood String?
+  city         String?
+  state        String?
+  postCode     String?
+  compliment   String?
+  latitude     Float?
+  longitude    Float?
+
+  establishment Establishment?
+  Professional  Professional?
+  Unity         Unity?
+  Customer      Customer[]
+
+  @@map("address")
+}
+
+// --- Establishment Section ---
+
+// Enums 
+
+enum EstablishmentStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum EstablishmentTargetCustomer {
+  HUMAN
+  ANIMAL
+  MIXED
+}
+
+// Model
+
+model Establishment {
+  id             String                      @id @default(uuid())
+  name           String                      @unique
+  abbreviation   String                      @unique
+  cnpj           String                      @unique
+  especiality    String?
+  mainPhone      String
+  secondaryPhone String?
+  targetCustomer EstablishmentTargetCustomer @default(HUMAN)
+  email          String                      @unique
+  status         EstablishmentStatus         @default(ACTIVE)
+
+  establishmentType    String
+  establishmentAddress String? @unique
+
+  locale            Address?          @relation(fields: [establishmentAddress], references: [id])
+  typeEstablishment EstablishmentType @relation(fields: [establishmentType], references: [id])
+
+  Professional         Professional[]
+  Unity                Unity[]
+  EstablishmentType    EstablishmentType[]    @relation("belongsTo")
+  RegionalDocumentType RegionalDocumentType[] @relation("belongsTo")
+  Customer             Customer[]
+  Medicine             Medicine[]
+  Prescription         Prescription[]
+  Pet                  Pet[]
+
+  @@map("establishment")
+}
+
+// --- Professional Section ---
+
+// Enums 
+
+enum ProfessionalStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum ProfessionalRole {
+  HEALTH_PROFESSIONAL
+  MANAGER
+  RESPONSIBLE
+  ADMINISTRATOR
+}
+
+enum ProfessionalBound {
+  ESTABLISHMENT
+  UNITY
+}
+
+// Model
+
+model Professional {
+  id                  String             @id @default(uuid())
+  name                String
+  email               String
+  cpf                 String
+  phone               String
+  role                ProfessionalRole   @default(HEALTH_PROFESSIONAL)
+  birthDate           String?
+  status              ProfessionalStatus @default(ACTIVE)
+  password            String
+  boundedTo           ProfessionalBound  @default(ESTABLISHMENT)
+  regionalDocument    String?
+  stateDocumentIssued String?
+  especiality         String?
+
+  regionalDocumentType String?
+  professionalAddress  String? @unique
+  establishmentBounded String
+  unityBounded         String?
+
+  reside       Address?              @relation(fields: [professionalAddress], references: [id])
+  belongs      Establishment         @relation(fields: [establishmentBounded], references: [id])
+  documentType RegionalDocumentType? @relation(fields: [regionalDocumentType], references: [id])
+  work         Unity?                @relation(fields: [unityBounded], references: [id])
+  Prescription Prescription[]
+
+  @@map("professional")
+}
+
+// --- Unity Section ---
+
+// Enums 
+
+enum UnityStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum UnityTargetCustomer {
+  HUMAN
+  ANIMAL
+  MIXED
+}
+
+// Model 
+
+model Unity {
+  id             String              @id @default(uuid())
+  name           String              @unique
+  abbreviation   String?             @unique
+  cnpj           String?             @unique
+  especiality    String?
+  mainPhone      String
+  secondaryPhone String?
+  targetCustomer UnityTargetCustomer @default(HUMAN)
+  email          String              @unique
+  status         UnityStatus         @default(ACTIVE)
+
+  unityType          String
+  unityAddress       String? @unique
+  unityEstablishment String
+
+  locale    Address?          @relation(fields: [unityAddress], references: [id])
+  typeUnity EstablishmentType @relation(fields: [unityType], references: [id])
+
+  belongs      Establishment  @relation(fields: [unityEstablishment], references: [id])
+  Professional Professional[]
+
+  @@map("unity")
+}
+
+// --- EstablishmentTypes Section ---
+
+// Enums 
+
+enum AvailableForOptions {
+  ESTABLISHMENT
+  UNITY
+  BOTH
+}
+
+enum EstablishmentTypeStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+// Model 
+
+model EstablishmentType {
+  id           String                  @id @default(uuid())
+  name         String                  @unique
+  availableFor AvailableForOptions     @default(UNITY)
+  status       EstablishmentTypeStatus @default(ACTIVE)
+
+  establishmentRegistered String?
+
+  belongsTo     Establishment?  @relation("belongsTo", fields: [establishmentRegistered], references: [id])
+  Establishment Establishment[]
+  Unity         Unity[]
+
+  @@map("EstablishmentType")
+}
+
+// --- RegionalDocumentType Section ---
+
+// Enums 
+
+enum DocumentTypeStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+// Model 
+
+model RegionalDocumentType {
+  id           String             @id @default(uuid())
+  name         String             @unique
+  abbreviation String
+  status       DocumentTypeStatus @default(ACTIVE)
+
+  establishmentRegistered String?
+
+  belongsTo    Establishment? @relation("belongsTo", fields: [establishmentRegistered], references: [id])
+  Professional Professional[]
+
+  @@map("RegionalDocumentType")
+}
+
+// --- Customer Section ---
+
+// Enums 
+
+enum CustomerStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+// Model 
+
+model Customer {
+  id             String         @id @default(uuid())
+  name           String
+  cpf            String?
+  otherDocument  String?
+  email          String?
+  cns            String?
+  birthDate      String?
+  mainPhone      String?
+  secondaryPhone String?
+  isPatient      Boolean        @default(true)
+  isResponsible  Boolean        @default(false)
+  isTutor        Boolean        @default(false)
+  status         CustomerStatus @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+
+  customerAddress       String?
+  customerEstablishment String
+
+  resides    Address?      @relation(fields: [customerAddress], references: [id])
+  registered Establishment @relation(fields: [customerEstablishment], references: [id])
+
+  Patient     PatientHasResponsibles[] @relation("Patient")
+  Responsible PatientHasResponsibles[] @relation("Responsible")
+
+  PatientPresc Prescription[] @relation("PatientPresc")
+  TutorPresc   Prescription[] @relation("TutorPresc")
+  Pet          Pet[]
+
+  @@map("Customer")
+}
+
+// --- PatientHasResponsibles Section ---
+
+model PatientHasResponsibles {
+  patientId     String
+  responsibleId String
+
+  patient     Customer @relation("Patient", fields: [patientId], references: [id])
+  responsible Customer @relation("Responsible", fields: [responsibleId], references: [id])
+
+  @@id([patientId, responsibleId])
+  @@map("PatientResponsibles")
+}
+
+// --- Medicine Section ---
+
+// Enums 
+
+enum MedicineStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum MedicineForUse {
+  HUMAN
+  ANIMAL
+  BOTH
+}
+
+enum MedicinePharmaceuticalForm {
+  COMPRIMIDO
+  CAPSULA
+  DRAGEA
+  PASTILHA
+  SUPOSITORIO
+  POMADA
+  CREME
+  GEL
+  XAROPE
+  GOTA
+  NASAL
+  OFTALMICA
+  INJETAVEL
+  SPRAY
+  AEROSSOL
+}
+
+enum MedicineRegulatoryCategory {
+  FITOTERAPICO
+  INOVADOR
+  NOVO
+  SIMILAR
+  BIOLOGICO
+  ESPECIFICO
+  GENERICO
+  DINAMIZADO
+  SINTETICO
+  RADIOFARMACO
+  INDUSTRIALIZADO
+}
+
+// Model 
+
+model Medicine {
+  id                 String                      @id @default(uuid())
+  name               String
+  pharmaceuticalForm MedicinePharmaceuticalForm  @default(COMPRIMIDO)
+  regulatoryCategory MedicineRegulatoryCategory?
+  activeIngredient   String?
+  forUse             MedicineForUse              @default(HUMAN)
+  status             MedicineStatus              @default(ACTIVE)
+
+  establishmentRegistered String?
+
+  belongsTo  Establishment?            @relation(fields: [establishmentRegistered], references: [id])
+  Prescribed PrescriptionHasMedicine[] @relation("Prescribed")
+
+  @@map("medicine")
+}
+
+// --- Prescription Section ---
+
+// Enums 
+
+enum PrescriptionType {
+  MEDIC
+  VETERINARY
+}
+
+// Model
+
+model Prescription {
+  id               String           @id @default(uuid())
+  emissionDate     String
+  expirationDate   String
+  prescriptionType PrescriptionType @default(MEDIC)
+  observation      String?
+  pdfBuffer        Bytes?
+  createdAt        DateTime         @default(now())
+
+  establishmentPrescription String
+  patientPrescription       String?
+  tutorPrescription         String?
+  petPrescription           String?
+  professionalPrescription  String
+
+  registeredAt           Establishment             @relation(fields: [establishmentPrescription], references: [id])
+  PatientPresc           Customer?                 @relation("PatientPresc", fields: [patientPrescription], references: [id])
+  TutorPresc             Customer?                 @relation("TutorPresc", fields: [tutorPrescription], references: [id])
+  emittedBy              Professional              @relation(fields: [professionalPrescription], references: [id])
+  PrescriptionRegistered PrescriptionHasMedicine[] @relation("PrescriptionRegistered")
+
+  @@map("prescription")
+}
+
+// --- PrescriptionHasMedicine Section ---
+
+// Enums 
+
+enum PrescriptionHasMedicineAdministrationWay {
+  ORAL
+  SUBLINGUAL
+  BUCAL
+  RETAL
+  VAGINAL
+  INTRAVENOSA
+  INTRAMUSCULAR
+  SUBCUTANEA
+  INTRADERMICA
+  INALATORIA
+  NASALOFTALMICA
+  OTOLOGICA
+  TOPICA
+  TRANSDERMICA
+  INTRA_ARTICULAR
+  INTRAPERITONEAL
+  EPIDURAL
+  INTRATECAL
+  INTRACARDIACA
+  URETRAL
+}
+
+// Model 
+
+model PrescriptionHasMedicine {
+  prescriptionId String
+  medicineId     String
+
+  dosage            String
+  totalAmount       String
+  administrationWay PrescriptionHasMedicineAdministrationWay @default(ORAL)
+
+  prescriptionRegistered Prescription @relation("PrescriptionRegistered", fields: [prescriptionId], references: [id])
+  prescribed             Medicine     @relation("Prescribed", fields: [medicineId], references: [id])
+
+  @@id([prescriptionId, medicineId])
+  @@map("PrescriptionHasMedicine")
+}
+
+// --- Pet Section ---
+
+// Enums 
+
+enum PetStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum PetSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum PetSex {
+  MALE
+  FEMALE
+}
+
+// Model
+
+model Pet {
+  id      String    @id @default(uuid())
+  petName String
+  specie  String
+  breed   String?
+  age     String?
+  size    PetSize   @default(SMALL)
+  sex     PetSex    @default(MALE)
+  status  PetStatus @default(ACTIVE)
+
+  establishmentRegistered String
+  customerOwner           String
+
+  belongsTo Establishment? @relation(fields: [establishmentRegistered], references: [id])
+  owner     Customer?      @relation(fields: [customerOwner], references: [id])
+
+  @@map("pet")
+}

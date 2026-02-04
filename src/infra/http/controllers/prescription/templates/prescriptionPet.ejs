@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+      body { 
+        background-color: #f7f8f5;
+      }
+
+     .header-container { 
+        background-color: #002c14;
+      }
+
+      .titulo-estabelecimento {
+        color: #065336;
+      }
+
+      .container-prescricao { 
+        height: 350px;
+      }
+
+      .line-detail { 
+        display: block;
+        width: 400px;
+        height: 2px;
+        background-color: #1b1b1b;
+      }
+
+      .container-observacao { 
+        display: block;
+        height: 80px;
+      }
+
+      table {
+          width: 100%;
+      }
+    </style>
+</head>
+<body>
+    <div class="header-container p-4 flex justify-center mb-4">
+        <h1 class="text-2xl mb-2 text-center text-white font-bold uppercase">Receituário simples</h1>
+    </div>  
+    <div class="m-8">    
+        <table class="mb-8">
+            <tbody>
+                <tr class="border border-black">
+                    <td class="text-center p-1 font-bold">IDENTIFICAÇÃO DO EMITENTE</td>
+                </tr>
+                <tr class="border border-black">
+                    <td class="p-1"><b><%= prescription.professionalDocumentType %>:</b> <%= prescription.professionalDocument %></td>
+                </tr>
+                <tr class="border border-black">
+                    <td class="p-1"><b>Nome:</b> <span class="uppercase"><%= prescription.professionalName %></span></td>
+                </tr>
+                <tr class="border border-black">
+                    <td class="p-1"><b>Fone:</b> <%= prescription.professionalPhone %></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h1 class="text-lg mb-1"><b>Tutor:</b> <span class="uppercase"><%= prescription.tutorName %></span></h1>
+        <h1 class="text-lg mb-1"><b>Pet:</b> <span class="uppercase"><%= prescription.petName %></span></h1>
+        <h1 class="text-lg mb-4"><b>Espécie:</b> <span class="uppercase"><%= prescription.petSpecie %></span></h1>
+
+        <div class="container-prescricao flex flex-col gap-6 mb-8">
+            <% if (prescription.medicinePrescribedList.length > 0) { %>
+                <% prescription.medicinePrescribedList.forEach((medicinePrescribed, i) => { %>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between text-lg"><span><%= i + 1 %> - <%= medicinePrescribed.medicineName %> --- <%= medicinePrescribed.totalAmount %></span> <span><b>Via:</b> <%= medicinePrescribed.administrationWay %></span></div>
+                        <p><%= medicinePrescribed.dosage %></p>
+                    </div>
+                <%  }); %>
+            <% } %>
+        </div>
+
+        <div class="container-observacao mb-4 border border-black p-2">
+            <b>Observação:</b> <%= prescription.observation %>
+        </div>
+        
+        <div class="flex flex-col gap-20 justify-center items-center mb-8">
+            <div class="flex gap-2 justify-center items-center ">
+                <p><b class="font-medium">Data de emissão:</b> <%= prescription.emissionDate%></p><span>-</span><p><b class="font-medium">Data de vencimento:</b> <%= prescription.expirationDate %></p>
+            </div>
+            <div class="flex flex-col gap-2 justify-center items-center">
+                <div class="line-detail"></div>
+                <p class="uppercase"><%= prescription.professionalDocumentType %>: <%= prescription.professionalDocument %> - <%= prescription.professionalName %></p>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <h1 class="titulo-estabelecimento font-bold uppercase"><%= prescription.establishmentName %></h1>
+            <p class="text-gray-800 text-sm"><b class="text-gray-700">Endereço:</b> 
+            <% if (prescription.establishmentAddress) {
+                if(prescription.establishmentAddress.street && prescription.establishmentAddress.number){ %>
+                    <span><%= prescription.establishmentAddress.street %>, <%= prescription.establishmentAddress.number %></span>
+                <% }
+                if (prescription.establishmentAddress.city){ %>
+                    <span> - <%= prescription.establishmentAddress.city %></span>
+                <% }
+                if (prescription.establishmentAddress.state){ %>
+                    <span> (<%= prescription.establishmentAddress.state %>)</span>
+                <% }
+
+                if (prescription.establishmentAddress.postCode){ %>
+                    <span> - CEP: <%= prescription.establishmentAddress.postCode %></span>
+                <% }
+             } %>
+            </p>
+            <p class="text-gray-800 text-sm"><b class="text-gray-700">Fone:</b> <%= prescription.establishmentPhone %></p>
+        </div>
+    </div>
+</body>
+</html>

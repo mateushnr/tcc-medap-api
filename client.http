@@ -1,0 +1,236 @@
+@baseUrl = http://localhost:3000
+@authToken = {{authenticate.response.body.accessToken}}
+
+# @name create_professional
+POST {{baseUrl}}/api/professionals
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "cpf": "123.456.789-11",
+    "phone": "18 99888-8888",
+    "role": "ADMINISTRATOR",
+    "birthDate": "2000-01-01",
+    "status": "ACTIVE",
+    "password": "123456",
+    "boundedTo": "ESTABLISHMENT",
+    "establishmentBounded": "0fb70722-2895-4f05-813b-88d92714ef38",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 752,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo"
+}
+
+###
+
+# @name authenticate
+POST {{baseUrl}}/sessions
+Content-Type: application/json
+
+{
+    "organization": "Medap",
+    "email": "johndoe@example.com",
+    "password": "654321"
+}
+
+###
+
+# @name create_establishment
+POST {{baseUrl}}/api/establishments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "Sistema de acompanhamento de medicação e prescrição",
+    "abbreviation": "Medap",
+    "cnpj": "42.864.203/0001-75",
+    "establishmentType": "9d043804-9274-4fd9-8ea2-ef12f464fc4e",
+    "especiality": "Cardiologia",
+    "mainPhone": "18 99999-9999",
+    "email": "medap@contato.com",
+    "status": "ACTIVE",
+    "targetCustomer": "HUMAN",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 751,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo",
+    "latitude": 22.1447,
+    "longitude": -46.9890
+}
+
+###
+
+# @name recover-user-data
+GET {{baseUrl}}/sessions/recover-user-data
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name get-all-establishments
+GET {{baseUrl}}/api/establishments
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+
+# @name get-by-id-establishment
+GET  {{baseUrl}}/api/establishments/?id=df49df33-3923-450a-91de-5e456890cb30
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name deactivate-establishment
+PATCH  {{baseUrl}}/api/establishments/deactivate
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "idEstablishmentToDeactivate": "ce2f7fe2-fe98-4a40-be77-c6377112c5cc"
+}
+
+###
+
+# @name update-establishment
+PUT  {{baseUrl}}/api/establishments/?id=6564ceca-6491-4006-9b51-9ac8162ffd0e
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "ZZZZZZZZZ",
+    "abbreviation": "ZZZ",
+    "cnpj": "42.864.203/0001-71",
+    "type": "HOSPITAL",
+    "especiality": "Cardiologia",
+    "mainPhone": "18 99999-9999",
+    "email": "medaaap@contato.com",
+    "status": "ACTIVE",
+    "targetCustomer": "HUMAN",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 751,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo",
+    "latitude": 22.1447,
+    "longitude": 46.9890
+}
+
+###
+
+# @name create-unity
+POST  {{baseUrl}}/api/units
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "teste unidade",
+    "abbreviation": "uu",
+    "cnpj": "42.864.203/0001-71",
+    "type": "INTERNAL",
+    "belongsTo": "60711ff2-6a1c-4c18-9008-acfa9cf33ed1",
+    "especiality": "Cardiologia",
+    "mainPhone": "18 99999-9999",
+    "email": "unidadeteste@contato.com",
+    "status": "ACTIVE",
+    "targetCustomer": "HUMAN",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 751,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo",
+    "latitude": 22.1447,
+    "longitude": 46.9890
+}
+
+###
+
+# @name get-all-units
+GET {{baseUrl}}/api/units
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+
+# @name get-by-id-unity
+GET  {{baseUrl}}/api/units/?id=df49df33-3923-450a-91de-5e456890cb30
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name deactivate-unity
+PATCH  {{baseUrl}}/api/units/deactivate
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "idUnityToDeactivate": "ce2f7fe2-fe98-4a40-be77-c6377112c5cc"
+}
+
+###
+
+# @name update-unity
+PUT  {{baseUrl}}/api/units/?id=6564ceca-6491-4006-9b51-9ac8162ffd0e
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "Unity updated",
+    "abbreviation": "uupdt",
+    "cnpj": "42.864.203/0001-71",
+    "type": "INTERNAL",
+    "especiality": "Cardiologia",
+    "mainPhone": "18 99999-9999",
+    "email": "unityupd@contato.com",
+    "status": "ACTIVE",
+    "targetCustomer": "HUMAN",
+    "belongsTo": "60711ff2-6a1c-4c18-9008-acfa9cf33ed1",
+    "postCode": "04469-125",
+    "street": "Rua General Oliveira Ramos",
+    "number": 751,
+    "neighborhood": "Jardim Itapura",
+    "city": "São Paulo",
+    "state": "São Paulo",
+    "latitude": 22.1447,
+    "longitude": 46.9890
+}
+
+###
+
+# @name get-units-from-establishment
+GET  {{baseUrl}}/api/units/from-establishment/?id=6bf2b566-2df2-4a74-8a5e-c06b3181410c
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name create_establishment_type
+POST {{baseUrl}}/api/establishments/types
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "name": "John Doe",
+    "availableFor": "BOTH",
+    "status": "ACTIVE",
+}
+
+###
+
+###
+
+# @name create-prescription-pdf
+GET {{baseUrl}}/api/prescriptions/pdf/?id=86cb9b49-c67e-46eb-b22a-bc07811f5e6d
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
